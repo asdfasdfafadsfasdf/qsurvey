@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>재난관리 연구자의 스트레스 인식 Q분류</title>
+<style>
+:root {
+  --bg:#f5f7fb; --ink:#172033; --muted:#667085; --card:#fff; --line:#d9e2ef;
+  --agree:#0f766e; --neutral:#64748b; --disagree:#b42318; --blue:#2563eb; --orange:#ea580c; --green:#059669;
+  --agree-bg:#ecfdf5; --neutral-bg:#f1f5f9; --disagree-bg:#fff1f2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:"Malgun Gothic",Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(135deg,#0f172a,#1d4ed8);color:#fff;padding:22px 26px}
+header h1{margin:0 0 8px;font-size:24px}
+header p{margin:0;color:#dbeafe;line-height:1.5}
+main{max-width:1500px;margin:0 auto;padding:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(15,23,42,.06)}
+h2{margin:0 0 12px;font-size:20px}
+.info{line-height:1.55;color:var(--muted)}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+label{font-size:13px;color:#475569;font-weight:700}
+input, select{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.navBtns{display:flex;gap:10px;flex-wrap:wrap}
+button{border:0;border-radius:12px;padding:12px 16px;font-weight:900;color:white;background:var(--blue);cursor:pointer;font-size:15px}
+button:disabled{background:#cbd5e1;cursor:not-allowed}
+button.orange{background:var(--orange)} button.green{background:var(--green)} button.red{background:#dc2626} button.gray{background:#475569}
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.sum{border:1px solid var(--line);border-radius:14px;padding:10px;background:#f8fafc;text-align:center}
+.sum b{display:block;font-size:22px;margin-top:3px}
+.progressWrap{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:9px 0 4px}
+.progress{height:100%;width:0;background:linear-gradient(90deg,#2563eb,#0f766e);transition:.2s}
+.pageInfo{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-weight:700}
+.card{background:#fff;border:2px solid var(--line);border-radius:16px;padding:13px;margin:10px 0;box-shadow:0 2px 8px rgba(15,23,42,.06);transition:.2s}
+.card.selected-agree{border-color:var(--agree);background:var(--agree-bg)}
+.card.selected-neutral{border-color:var(--neutral);background:var(--neutral-bg)}
+.card.selected-disagree{border-color:var(--disagree);background:var(--disagree-bg)}
+.card .top{display:flex;gap:7px;align-items:center;margin-bottom:7px}
+.num{font-weight:900;color:var(--blue);font-size:18px}
+.cat{font-size:12px;background:#eef2ff;color:#334155;border-radius:999px;padding:3px 8px}
+.card p{margin:0;line-height:1.52;font-size:16px}
+.choices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:11px}
+.choice{padding:12px 6px;border-radius:12px;color:#fff;text-align:center;font-weight:900;cursor:pointer;font-size:15px;opacity:.92;box-shadow:0 2px 6px rgba(15,23,42,.12);user-select:none}
+.choice:hover{transform:translateY(-1px);opacity:1}
+.choice.a{background:var(--agree)} .choice.n{background:var(--neutral)} .choice.d{background:var(--disagree)}
+.choice.on{outline:4px solid rgba(37,99,235,.20);filter:brightness(1.08);transform:scale(1.02)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:white;border-radius:999px;padding:12px 18px;font-weight:900;box-shadow:0 8px 24px rgba(15,23,42,.25);display:none;z-index:9999}
+.hide{display:none!important}
+.secondGuide{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.legend{font-size:13px;border:1px solid var(--line);background:#f8fafc;border-radius:999px;padding:7px 10px;color:#475569}
+.cardBank{border:2px dashed var(--line);border-radius:16px;background:#fbfdff;padding:10px;min-height:96px;max-height:170px;overflow:auto;margin-bottom:12px}
+.cardBank h3{margin:0 0 6px;font-size:17px}
+.bankGrid{display:grid;grid-template-columns:repeat(9, minmax(92px,1fr));gap:6px}
+.compactCard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 7px;box-shadow:0 1px 4px rgba(15,23,42,.05);cursor:grab;font-size:11.5px;line-height:1.25;min-height:34px}
+.compactCard .qnum{font-weight:900;color:var(--blue);font-size:13px;margin-right:3px}
+.compactCard .txt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.compactCard.selected-agree{border-color:var(--agree);background:var(--agree-bg)}
+.compactCard.selected-neutral{border-color:var(--neutral);background:var(--neutral-bg)}
+.compactCard.selected-disagree{border-color:var(--disagree);background:var(--disagree-bg)}
+
+/* 전체 피라미드가 한 화면에 보이는 형태 */
+.pyramidFrame{width:100%;overflow-x:auto;padding:6px 0 10px}
+.qpyramid{display:grid;grid-template-columns:repeat(9, minmax(105px, 1fr));gap:7px;align-items:end;min-width:1100px}
+.pcol{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end}
+.phead{text-align:center;font-weight:900;color:#fff;border-radius:10px 10px 0 0;padding:6px;font-size:14px}
+.phead.pos{background:#0f766e} .phead.neg{background:#b42318} .phead.zero{background:#64748b}
+.pneed{text-align:center;font-size:11px;color:var(--muted);padding:3px;background:#eef2f7}
+.slotStack{display:flex;flex-direction:column;gap:4px;background:#f8fafc;border:1px solid var(--line);border-radius:0 0 10px 10px;padding:5px;min-height:80px}
+.cell{height:38px;border:2px dashed #cbd5e1;border-radius:8px;background:#fff;overflow:hidden;padding:2px}
+.cell.over, .cardBank.over{background:#eff6ff;border-color:#2563eb}
+.cell .compactCard{height:30px;min-height:30px;font-size:10.5px;padding:3px 5px;margin:0;line-height:1.1}
+.cell .compactCard .txt{-webkit-line-clamp:1}
+.dragging{opacity:.45}
+.finishBox{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:16px;padding:14px;color:#065f46;font-weight:700}
+.submitNotice{background:#eff6ff;border:1px solid #bfdbfe;border-radius:14px;padding:12px;color:#1e3a8a;font-weight:700}
+@media(max-width:1200px){.bankGrid{grid-template-columns:repeat(6, minmax(90px,1fr))}}
+@media(max-width:980px){.meta,.summary{grid-template-columns:1fr 1fr} .bankGrid{grid-template-columns:repeat(4, minmax(90px,1fr))}}
+@media(max-width:650px){.meta,.summary{grid-template-columns:1fr} .choices{grid-template-columns:1fr} .actions{justify-content:flex-start} .bankGrid{grid-template-columns:1fr 1fr}}
+
+.consentBox{border:1px solid var(--line);border-radius:14px;background:#f8fafc;padding:12px;margin-top:12px}
+.checkLine{display:block;font-size:15px;line-height:1.6;margin:8px 0;color:#334155}
+.checkLine input{width:auto;margin-right:8px;transform:scale(1.2)}
+.kakaoBtn{display:inline-flex;align-items:center;gap:10px;background:#FEE500;color:#191919;border:0;border-radius:14px;padding:14px 24px;font-size:17px;font-weight:900;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12);transition:.15s}
+.kakaoBtn:hover{background:#f5d800;transform:translateY(-1px)}
+.shareUrl{display:flex;gap:8px;margin-top:10px;align-items:center}
+.shareUrl input{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#f8fafc;color:#334155;font-size:13px}
+.copyBtn{white-space:nowrap;background:#475569;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:900;color:#fff;border:0;cursor:pointer}
+.copyBtn:hover{background:#334155}
+</style>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
+</head>
+<body>
+<header>
+  <h1>재난관리 연구자의 스트레스 인식 Q분류</h1>
+  <p>2차 분류판을 피라미드 형태로 전체가 보이게 구성하고, 제출은 실제 메일 전송 방식으로 구성했습니다.</p>
+</header>
+<main>
+  <!-- 카카오톡 공유 패널 -->
+  <section class="panel" id="sharePanel" style="border:2px solid #FEE500;">
+    <h2>📤 설문지 공유하기</h2>
+    <p class="info" style="margin-bottom:12px">아래 버튼으로 카카오톡에 설문 링크를 공유하거나, URL을 직접 복사하여 전달하세요.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="kakaoBtn" onclick="shareKakao()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="11" rx="9" ry="7.5" fill="#191919"/><path d="M8 11c.3-1.2 1.8-2 4-2s3.7.8 4 2c.2.9-.5 1.7-1.5 2.1l.6 2.3-2.4-1.5c-.3 0-.5.1-.7.1-2.2 0-4.1-1.3-4-3z" fill="#FEE500"/></svg>
+        카카오톡으로 공유
+      </button>
+      <button class="copyBtn" onclick="copyUrl()" style="padding:14px 18px;font-size:15px">🔗 링크 복사</button>
+    </div>
+    <div class="shareUrl">
+      <input type="text" id="shareUrlInput" readonly value="" placeholder="현재 페이지 URL이 표시됩니다">
+      <button class="copyBtn" onclick="copyUrl()">복사</button>
+    </div>
+    <p class="info" style="margin-top:8px;font-size:13px">※ 설문지를 로컬 파일로 열었을 경우, 웹 서버(GitHub Pages, Google Drive 공유 등)에 업로드한 URL을 입력하여 공유하세요.</p>
+  </section>
+
+  <section class="panel" id="consentPanel">
+    <h2>연구참여 안내 및 자발적 동의</h2>
+    <p class="info">
+      본 설문은 <b>「재난관리 연구자의 스트레스 인식에 관한 Q방법론 연구」</b>를 위한 자료수집입니다.
+      연구참여자는 아래 내용을 충분히 읽고 자발적으로 동의한 경우에만 참여할 수 있습니다.
+    </p>
+    <div class="submitNotice" style="margin:10px 0">
+      <b>IRB 관련 안내</b><br>
+      본 연구는 동아대학교 일반대학원 재난관리학 IRB 심의 면제 확인(면제번호: DAU-GS-DM-2026-E-0047)을 받아 진행됩니다.
+      연구참여자의 개인정보는 연구 목적 외에 활용되지 않으며, 익명 처리되어 안전하게 관리됩니다.
+    </div>
+    <div class="meta">
+      <div><label>IRB 승인/면제 여부</label><input id="irbStatus" value="동아대학교 일반대학원 재난관리학 IRB 심의 면제" readonly></div>
+      <div><label>IRB 승인번호</label><input id="irbNo" value="DAU-GS-DM-2026-E-0047" readonly></div>
+      <div><label>연구책임자</label><input id="researcherName" value="석사과정 이정훈" readonly></div>
+      <div><label>연락처/이메일</label><input id="researcherContact" value="L7384@naver.com"></div>
+    </div>
+    <div class="consentBox">
+      <label class="checkLine"><input type="checkbox" id="consent1"> 나는 연구 목적과 참여 절차에 대한 설명을 읽고 이해했습니다.</label>
+      <label class="checkLine"><input type="checkbox" id="consent2"> 나는 본 연구 참여가 자발적이며, 원하지 않을 경우 언제든 중단할 수 있음을 이해했습니다.</label>
+      <label class="checkLine"><input type="checkbox" id="consent3"> 나는 응답 내용이 연구 목적으로 활용될 수 있음에 동의합니다.</label>
+      <label class="checkLine"><input type="checkbox" id="consent4"> 나는 개인정보가 익명 또는 비식별 처리되어 관리된다는 점을 이해했습니다.</label>
+    </div>
+    <div class="actions" style="margin-top:12px">
+      <button class="green" onclick="startSurvey()">동의하고 설문 시작</button>
+      <span id="consentMsg" class="info">모든 동의 항목을 체크해야 설문을 시작할 수 있습니다.</span>
+    </div>
+  </section>
+
+  <section class="panel hide" id="demographicPanel">
+    <h2>인구통계학적 정보</h2>
+    <p class="info">아래 정보는 연구결과 해석을 위한 기초자료로만 활용됩니다. 개인을 식별할 수 없도록 비식별 처리하여 분석합니다.</p>
+    <div class="meta">
+      <div><label>참여자 번호</label><input id="pid" placeholder="예: P01"></div>
+      <div><label>성별</label>
+        <select id="gender">
+          <option value="">선택하세요</option>
+          <option value="남성">남성</option>
+          <option value="여성">여성</option>
+          <option value="응답하지 않음">응답하지 않음</option>
+        </select>
+      </div>
+      <div><label>연령대</label>
+        <select id="ageGroup">
+          <option value="">선택하세요</option>
+          <option value="20대">20대</option>
+          <option value="30대">30대</option>
+          <option value="40대">40대</option>
+          <option value="50대">50대</option>
+          <option value="60대 이상">60대 이상</option>
+          <option value="응답하지 않음">응답하지 않음</option>
+        </select>
+      </div>
+      <div><label>최종학력</label>
+        <select id="education">
+          <option value="">선택하세요</option>
+          <option value="고등학교 졸업">고등학교 졸업</option>
+          <option value="전문학사">전문학사 (전문대)</option>
+          <option value="학사">학사 (4년제 대학)</option>
+          <option value="석사과정 재학">석사과정 재학</option>
+          <option value="석사 졸업">석사 졸업</option>
+          <option value="박사과정 재학">박사과정 재학</option>
+          <option value="박사 졸업">박사 졸업</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+      <div><label>소속/전공</label>
+        <select id="affil">
+          <option value="">선택하세요</option>
+          <optgroup label="재난·안전 관련 전공">
+            <option value="재난관리학">재난관리학</option>
+            <option value="소방방재학">소방방재학</option>
+            <option value="안전공학">안전공학</option>
+            <option value="위기관리학">위기관리학</option>
+            <option value="행정학(재난·안전)">행정학 (재난·안전 전공)</option>
+          </optgroup>
+          <optgroup label="보건·의료 관련 전공">
+            <option value="응급의학">응급의학</option>
+            <option value="간호학">간호학</option>
+            <option value="응급구조학">응급구조학</option>
+            <option value="보건학·공중보건학">보건학·공중보건학</option>
+          </optgroup>
+          <optgroup label="경찰·법·사회 관련 전공">
+            <option value="경찰행정학">경찰행정학</option>
+            <option value="법학">법학</option>
+            <option value="사회학">사회학</option>
+            <option value="심리학">심리학</option>
+          </optgroup>
+          <optgroup label="공학 관련 전공">
+            <option value="토목·건설공학">토목·건설공학</option>
+            <option value="전기·전자공학">전기·전자공학</option>
+            <option value="철도·교통공학">철도·교통공학</option>
+            <option value="환경공학">환경공학</option>
+          </optgroup>
+          <optgroup label="기타">
+            <option value="행정학(일반)">행정학 (일반)</option>
+            <option value="기타 전공">기타 전공</option>
+            <option value="해당 없음">해당 없음</option>
+          </optgroup>
+        </select>
+      </div>
+      <div><label>직업/신분</label>
+        <select id="occupation">
+          <option value="">선택하세요</option>
+          <optgroup label="경찰">
+            <option value="경찰관(지구대·파출소)">경찰관 (지구대·파출소)</option>
+            <option value="경찰관(형사·수사)">경찰관 (형사·수사)</option>
+            <option value="경찰관(경비·기동)">경찰관 (경비·기동)</option>
+            <option value="경찰관(교통)">경찰관 (교통)</option>
+            <option value="경찰 행정직">경찰 행정직</option>
+          </optgroup>
+          <optgroup label="소방">
+            <option value="소방관(화재진압)">소방관 (화재진압)</option>
+            <option value="소방관(구조)">소방관 (구조)</option>
+            <option value="소방관(구급)">소방관 (구급)</option>
+            <option value="소방 행정직">소방 행정직</option>
+            <option value="의용소방대원">의용소방대원</option>
+          </optgroup>
+          <optgroup label="의료">
+            <option value="응급의학과 의사">응급의학과 의사</option>
+            <option value="간호사">간호사</option>
+            <option value="응급구조사(1급)">응급구조사 (1급)</option>
+            <option value="응급구조사(2급)">응급구조사 (2급)</option>
+            <option value="의료기관 재난담당자">의료기관 재난담당자</option>
+            <option value="공중보건의">공중보건의</option>
+          </optgroup>
+          <optgroup label="철도">
+            <option value="철도 기관사">철도 기관사</option>
+            <option value="철도 역무원">철도 역무원</option>
+            <option value="철도 안전관리자">철도 안전관리자</option>
+            <option value="철도 시설유지보수">철도 시설유지보수</option>
+            <option value="도시철도(지하철) 종사자">도시철도(지하철) 종사자</option>
+          </optgroup>
+          <optgroup label="재난 관련 직업">
+            <option value="재난안전 공무원(중앙)">재난안전 공무원 (중앙부처)</option>
+            <option value="재난안전 공무원(지방)">재난안전 공무원 (지방자치단체)</option>
+            <option value="재난안전 공무원(지자체 재난부서)">지자체 재난·안전 부서</option>
+            <option value="군/안보/대테러">군·안보·대테러</option>
+            <option value="방재·안전관리자">방재·안전관리자</option>
+            <option value="민간 안전관리자">민간 안전관리자</option>
+            <option value="공공기관·공기업 안전담당">공공기관·공기업 안전담당</option>
+            <option value="재난심리지원 전문가">재난심리지원 전문가</option>
+            <option value="재난복구·구호 전문가">재난복구·구호 전문가</option>
+            <option value="해양경찰·구조대">해양경찰·구조대</option>
+            <option value="산업안전관리자">산업안전관리자</option>
+          </optgroup>
+          <optgroup label="연구·교육">
+            <option value="재난관리 연구자(대학원생)">재난관리 연구자 (대학원생)</option>
+            <option value="재난관리 연구자(교수·연구원)">재난관리 연구자 (교수·연구원)</option>
+            <option value="안전 관련 강사·교육자">안전 관련 강사·교육자</option>
+          </optgroup>
+          <optgroup label="기타">
+            <option value="기타 재난 관련 직업">기타 재난 관련 직업</option>
+            <option value="기타">기타 (재난 비관련)</option>
+          </optgroup>
+        </select>
+      </div>
+      <div><label>근무경력</label>
+        <select id="career">
+          <option value="">선택하세요</option>
+          <option value="1년 미만">1년 미만</option>
+          <option value="1~3년">1~3년</option>
+          <option value="3~5년">3~5년</option>
+          <option value="5~10년">5~10년</option>
+          <option value="10~15년">10~15년</option>
+          <option value="15~20년">15~20년</option>
+          <option value="20년 이상">20년 이상</option>
+          <option value="해당 없음">해당 없음</option>
+        </select>
+      </div>
+      <div><label>재난관리 관련 경험</label>
+        <select id="disasterExp">
+          <option value="">선택하세요</option>
+          <option value="현장 대응 경험">현장 대응 경험</option>
+          <option value="현장조사·평가">현장조사·평가</option>
+          <option value="정책·계획 수립">정책·계획 수립</option>
+          <option value="훈련·교육 참여">훈련·교육 참여</option>
+          <option value="연구·학술">연구·학술</option>
+          <option value="복구·지원 활동">복구·지원 활동</option>
+          <option value="다수 해당">다수 해당 (복수 경험)</option>
+          <option value="없음">없음</option>
+        </select>
+      </div>
+      <div><label>주요 연구(업무)분야</label>
+        <select id="field">
+          <option value="">선택하세요</option>
+          <optgroup label="재난·안전">
+            <option value="재난정책·법·제도">재난정책·법·제도</option>
+            <option value="위기관리·대응">위기관리·대응</option>
+            <option value="재난예방·완화">재난예방·완화</option>
+            <option value="재난복구·회복력">재난복구·회복력</option>
+            <option value="소방안전">소방안전</option>
+            <option value="화학·산업재난">화학·산업재난</option>
+            <option value="자연재난(홍수·지진 등)">자연재난 (홍수·지진 등)</option>
+          </optgroup>
+          <optgroup label="보건·의료">
+            <option value="응급의료·재난의료">응급의료·재난의료</option>
+            <option value="재난심리·정신건강">재난심리·정신건강</option>
+            <option value="감염병·공중보건">감염병·공중보건</option>
+          </optgroup>
+          <optgroup label="치안·교통">
+            <option value="경찰·치안">경찰·치안</option>
+            <option value="철도·교통안전">철도·교통안전</option>
+          </optgroup>
+          <optgroup label="기타">
+            <option value="안전교육·훈련">안전교육·훈련</option>
+            <option value="기타">기타</option>
+            <option value="해당 없음">해당 없음</option>
+          </optgroup>
+        </select>
+      </div>
+      <div><label>소속기관 유형</label>
+        <select id="orgType">
+          <option value="">선택하세요</option>
+          <option value="대학(원)">대학(원)</option>
+          <option value="국공립 연구기관">국공립 연구기관</option>
+          <option value="민간 연구기관">민간 연구기관</option>
+          <option value="중앙행정기관">중앙행정기관</option>
+          <option value="지방자치단체">지방자치단체</option>
+          <option value="공공기관·공기업">공공기관·공기업</option>
+          <option value="경찰청·경찰서">경찰청·경찰서</option>
+          <option value="소방청·소방서">소방청·소방서</option>
+          <option value="병원·의료기관">병원·의료기관</option>
+          <option value="철도 관련 기관">철도 관련 기관</option>
+          <option value="군·안보 기관">군·안보 기관</option>
+          <option value="민간기업">민간기업</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+      <div><label>Q방법론 경험</label>
+        <select id="qExp">
+          <option value="">선택하세요</option>
+          <option value="없음">없음 (처음 참여)</option>
+          <option value="1회 참여">1회 참여한 적 있음</option>
+          <option value="2~3회 참여">2~3회 참여</option>
+          <option value="4회 이상 참여">4회 이상 참여</option>
+          <option value="연구자로 수행">Q방법론 연구자로 수행한 적 있음</option>
+        </select>
+      </div>
+      <div><label>비고</label><input id="note" placeholder="선택 입력"></div>
+    </div>
+  </section>
+
+  <section class="panel hide" id="progressPanel">
+    <h2>진행 현황</h2>
+    <div class="summary">
+      <div class="sum">전체 문항<b>36</b></div>
+      <div class="sum">1차 완료<b id="doneCnt">0</b></div>
+      <div class="sum">동의<b id="agreeCnt">0</b></div>
+      <div class="sum">중립<b id="neutralCnt">0</b></div>
+      <div class="sum">2차 배치<b id="qPlacedCnt">0</b></div>
+    </div>
+    <div class="progressWrap"><div class="progress" id="progress"></div></div>
+    <div class="pageInfo"><span id="pageLabel"></span><span id="msg">0/36개 완료</span></div>
+  </section>
+
+  <section class="panel hide" id="firstPanel">
+    <h2>1차 분류: 동의·중립·비동의</h2>
+    <p class="info">한 페이지에 10개씩 표시됩니다. 각 문항마다 하나를 선택하세요.</p>
+    <div id="pageCards"></div>
+    <div class="actions">
+      <div class="navBtns">
+        <button class="gray" id="prevBtn" onclick="prevPage()">이전</button>
+        <button id="nextBtn" onclick="nextPage()">다음</button>
+      </div>
+      <div class="navBtns">
+        <button class="orange" id="secondBtn" onclick="startSecondSort()">2차 분류 시작</button>
+        <button class="red" onclick="resetAll()">다시 하기</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel hide" id="secondPanel">
+    <h2>2차 분류: 피라미드 전체 보기</h2>
+    <div class="secondGuide">
+      <span class="legend">카드를 아래 피라미드 빈칸에 끌어다 놓으세요</span>
+      <span class="legend">빈칸 수: -4 2개, -3 3개, -2 4개, -1 5개, 0 8개, +1 5개, +2 4개, +3 3개, +4 2개</span>
+      <span class="legend">한 칸에 카드 1개만 배치됩니다</span>
+    </div>
+
+    <div class="cardBank" id="qCardBank" ondrop="dropToBank(event)" ondragover="allowDrop(event)" ondragenter="markOver(event)" ondragleave="unmarkOver(event)">
+      <h3>2차 분류용 카드 목록</h3>
+      <div class="bankGrid" id="bankGrid"></div>
+    </div>
+
+    <div class="pyramidFrame">
+      <div class="qpyramid" id="qpyramid"></div>
+    </div>
+
+    <div class="actions" style="margin-top:14px">
+      <button onclick="submitByBrowser()" class="green">제출하기</button>
+      <button onclick="resetSecondSort()" class="gray">2차 분류 다시 하기</button>
+      <button onclick="resetAll()" class="red">처음부터 다시 하기</button>
+      <span id="qMsg" class="info"></span>
+    </div>
+  </section>
+
+  <section class="panel hide" id="finishPanel">
+    <div class="submitNotice">
+      제출하기를 누르면 L7384@naver.com으로 결과가 전송되고, JSON 파일이 자동으로 다운로드됩니다.
+    </div>
+  </section>
+
+  <div id="submitStatus" class="panel hide">
+    <h2>제출 상태</h2>
+    <p id="submitStatusText" class="submitNotice">제출 준비 중입니다.</p>
+    <div id="jsonDownloadArea" class="hide" style="margin-top:10px">
+      <button class="green" onclick="downloadJSON()" style="font-size:15px">📥 JSON 파일 다시 다운로드</button>
+    </div>
+  </div>
+</main>
+<div id="toast" class="toast"></div>
+
+<script>
+const researcherEmail = "L7384@naver.com";
+const statements = [{"id": 1, "variable": "직무요구", "text": "재난관리 연구에서 가장 큰 스트레스는 논문·보고서 성과 압박이다."}, {"id": 2, "variable": "직무요구", "text": "연구 마감 일정이 다가오면 연구의 질보다 제출 자체가 더 큰 부담이 된다."}, {"id": 3, "variable": "직무요구", "text": "재난 피해 사례를 반복적으로 접하는 과정은 정신적으로 부담스럽다."}, {"id": 4, "variable": "직무요구", "text": "학회 발표나 심사 과정은 연구자에게 상당한 심리적 압박을 준다."}, {"id": 5, "variable": "직무요구", "text": "현장자료가 부족하거나 공개되지 않을 때 연구 전체가 흔들린다고 느낀다."}, {"id": 6, "variable": "직무요구", "text": "재난 피해자나 현장 공무원을 인터뷰하는 일은 연구자에게도 감정적 부담을 준다."}, {"id": 7, "variable": "직무요구", "text": "연구와 행정업무, 수업, 생업을 병행하는 것이 스트레스를 높인다."}, {"id": 8, "variable": "직무요구", "text": "재난관리 연구자는 사회적 책임감 때문에 일반 연구자보다 더 큰 부담을 느낀다."}, {"id": 9, "variable": "직무요구", "text": "정책자문이나 보고서 작성은 학술논문보다 더 큰 압박을 줄 때가 있다."}, {"id": 10, "variable": "직무자원", "text": "지도교수나 선배 연구자의 구체적인 피드백은 연구 스트레스를 줄여준다."}, {"id": 11, "variable": "직무자원", "text": "동료 연구자와의 대화와 협업은 심리적 안정감을 준다."}, {"id": 12, "variable": "직무자원", "text": "충분한 연구비와 자료 접근권은 연구자의 부담을 크게 줄인다."}, {"id": 13, "variable": "직무자원", "text": "연구자가 자율적으로 연구 방향을 정할 수 있을 때 스트레스가 낮아진다."}, {"id": 14, "variable": "직무자원", "text": "기관이나 현장 관계자의 협조는 재난관리 연구 지속에 중요한 자원이다."}, {"id": 15, "variable": "직무자원", "text": "연구자의 정신건강을 지원하는 상담·회복 프로그램이 필요하다."}, {"id": 16, "variable": "직무자원", "text": "충분한 휴식과 회복 시간이 보장되어야 좋은 연구가 가능하다."}, {"id": 17, "variable": "직무자원", "text": "연구성과에 대한 인정과 보상은 연구 동기를 유지하게 만든다."}, {"id": 18, "variable": "직무자원", "text": "연구실이나 조직의 심리적 안전감은 스트레스 완화에 중요하다."}, {"id": 19, "variable": "소진", "text": "재난 관련 자료를 오래 분석하면 신체적·정신적 피로가 심해진다."}, {"id": 20, "variable": "소진", "text": "논문 작성 과정은 생각보다 감정 에너지를 많이 소모시킨다."}, {"id": 21, "variable": "소진", "text": "연구가 잘 풀리지 않을 때 무기력함을 느낀다."}, {"id": 22, "variable": "소진", "text": "연구 스트레스가 지속되면 집중력과 판단력이 떨어진다."}, {"id": 23, "variable": "소진", "text": "재난 사례를 접한 뒤 쉽게 감정이 가라앉지 않을 때가 있다."}, {"id": 24, "variable": "소진", "text": "연구 압박이 계속되면 수면이나 건강에도 영향을 준다."}, {"id": 25, "variable": "소진", "text": "연구 활동 때문에 개인 생활의 균형이 무너질 때가 있다."}, {"id": 26, "variable": "소진", "text": "성과를 내야 한다는 압박은 연구자를 쉽게 지치게 만든다."}, {"id": 27, "variable": "소진", "text": "재난관리 연구자의 번아웃은 연구윤리와 연구의 질에도 영향을 줄 수 있다."}, {"id": 28, "variable": "이탈/냉소", "text": "재난관리 연구가 실제 정책을 바꿀 수 있는지 회의감이 들 때가 있다."}, {"id": 29, "variable": "이탈/냉소", "text": "재난 사례를 반복해서 다루다 보면 감정이 점점 무뎌진다."}, {"id": 30, "variable": "이탈/냉소", "text": "연구를 객관적으로 하기 위해 피해자의 고통과 의도적으로 거리를 두게 된다."}, {"id": 31, "variable": "이탈/냉소", "text": "논문 실적 중심의 분위기는 연구의 의미를 약화시킨다."}, {"id": 32, "variable": "이탈/냉소", "text": "연구가 단순한 과제 수행이나 실적으로 느껴질 때가 있다."}, {"id": 33, "variable": "이탈/냉소", "text": "재난관리 연구를 시작했을 때의 사명감이 줄어든 적이 있다."}, {"id": 34, "variable": "이탈/냉소", "text": "재난을 숫자와 통계로만 바라보게 될 때 연구자로서 불편함을 느낀다."}, {"id": 35, "variable": "이탈/냉소", "text": "과도한 연구 압박은 연구 자체에 대한 흥미를 떨어뜨린다."}, {"id": 36, "variable": "이탈/냉소", "text": "제도 변화가 느리기 때문에 연구자의 노력도 한계가 있다고 느낀다."}];
+const currentDist = [[-4, 2], [-3, 3], [-2, 4], [-1, 5], [0, 8], [1, 5], [2, 4], [3, 3], [4, 2]];
+const pageSize = 10;
+let currentPage = 0;
+let answers = {};
+
+function cardHTML(s){
+  const ans = answers[s.id] || "";
+  return `<div class="card ${ans ? 'selected-' + ans : ''}" id="card-${s.id}">
+    <div class="top"><span class="num">${s.id}</span><span class="cat">${s.variable}</span></div>
+    <p>${s.text}</p>
+    <div class="choices">
+      <div class="choice a ${ans==='agree'?'on':''}" onclick="selectAnswer(${s.id}, 'agree')">동의</div>
+      <div class="choice n ${ans==='neutral'?'on':''}" onclick="selectAnswer(${s.id}, 'neutral')">중립</div>
+      <div class="choice d ${ans==='disagree'?'on':''}" onclick="selectAnswer(${s.id}, 'disagree')">비동의</div>
+    </div>
+  </div>`;
+}
+function qCardHTML(s){
+  const ans = answers[s.id] || "";
+  return `<div class="compactCard ${ans ? 'selected-' + ans : ''}" id="qcard-${s.id}" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" title="${s.id}. ${s.text}">
+    <span class="qnum">${s.id}</span><span class="txt">${s.text}</span>
+  </div>`;
+}
+
+function startSurvey(){
+  const required = ['consent1','consent2','consent3','consent4'];
+  const ok = required.every(id => document.getElementById(id).checked);
+  if(!ok){
+    document.getElementById('consentMsg').innerHTML = '<span class="bad">모든 동의 항목을 체크해야 설문을 시작할 수 있습니다.</span>';
+    alert('연구참여 동의 항목을 모두 체크해 주세요.');
+    return;
+  }
+  document.getElementById('consentPanel').classList.add('hide');
+  document.getElementById('demographicPanel').classList.remove('hide');
+  document.getElementById('progressPanel').classList.remove('hide');
+  document.getElementById('firstPanel').classList.remove('hide');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function init(){ buildPyramid(); renderPage(); update(); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(window.toastTimer); window.toastTimer=setTimeout(()=>t.style.display='none',900); }
+function renderPage(){
+  const start=currentPage*pageSize, end=Math.min(start+pageSize, statements.length);
+  document.getElementById('pageCards').innerHTML = statements.slice(start,end).map(cardHTML).join('');
+  document.getElementById('pageLabel').textContent = `${currentPage+1} / ${Math.ceil(statements.length/pageSize)} 페이지 · ${start+1}~${end}번 문항`;
+  document.getElementById('prevBtn').disabled = currentPage===0;
+  document.getElementById('nextBtn').textContent = currentPage===Math.ceil(statements.length/pageSize)-1 ? '마지막 페이지' : '다음';
+  document.getElementById('nextBtn').disabled = currentPage===Math.ceil(statements.length/pageSize)-1;
+}
+function selectAnswer(id,target){ answers[id]=target; renderPage(); update(); const label=target==='agree'?'동의':target==='neutral'?'중립':'비동의'; toast(`${id}번 문항: ${label} 선택`); }
+function prevPage(){ if(currentPage>0){ currentPage--; renderPage(); window.scrollTo({top:0,behavior:'smooth'}); } }
+function nextPage(){ if(currentPage<Math.ceil(statements.length/pageSize)-1){ currentPage++; renderPage(); window.scrollTo({top:0,behavior:'smooth'}); } }
+
+function buildPyramid(){
+  const q=document.getElementById('qpyramid'); q.innerHTML="";
+  currentDist.forEach(([score,need])=>{
+    const col=document.createElement('div'); col.className='pcol';
+    const cls=score>0?'pos':score<0?'neg':'zero';
+    let cells = '';
+    for(let i=0;i<need;i++) {
+      cells += `<div class="cell" id="cell-${score}-${i}" data-score="${score}" data-need="1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="markOver(event)" ondragleave="unmarkOver(event)"></div>`;
+    }
+    col.innerHTML=`<div class="phead ${cls}">${score>0?'+'+score:score}</div>
+      <div class="pneed">${need}개</div>
+      <div class="slotStack">${cells}</div>`;
+    q.appendChild(col);
+  });
+}
+
+function startSecondSort(){
+  if(Object.keys(answers).length!==36){ alert(`1차 분류가 완료되지 않았습니다. 현재 ${Object.keys(answers).length}/36개입니다.`); return; }
+  document.getElementById('secondPanel').classList.remove('hide');
+  document.getElementById('finishPanel').classList.remove('hide');
+  resetSecondSort(false);
+  window.location.hash='#secondPanel';
+  update();
+}
+function resetSecondSort(confirmAsk=true){
+  if(confirmAsk && !confirm('2차 분류만 다시 시작할까요?')) return;
+  buildPyramid();
+  document.getElementById('bankGrid').innerHTML = statements.map(qCardHTML).join('');
+  update();
+}
+function allowDrop(ev){ ev.preventDefault(); }
+function markOver(ev){ ev.preventDefault(); const t=findDropTarget(ev.target); if(t) t.classList.add('over'); }
+function unmarkOver(ev){ const t=findDropTarget(ev.target); if(t) t.classList.remove('over'); }
+function findDropTarget(el){ while(el && !el.classList.contains('cell') && !el.classList.contains('cardBank') && !el.classList.contains('bankGrid')) el=el.parentElement; return el; }
+function drag(ev){ ev.dataTransfer.setData("text/plain", ev.target.id); ev.target.classList.add("dragging"); }
+function dragEnd(ev){ ev.target.classList.remove("dragging"); document.querySelectorAll('.over').forEach(x=>x.classList.remove('over')); update(); }
+function drop(ev){
+  ev.preventDefault();
+  let target=findDropTarget(ev.target);
+  if(!target || !target.classList.contains('cell')) return;
+  const id=ev.dataTransfer.getData("text/plain"); const el=document.getElementById(id);
+  if(!el) return;
+  const existing = target.querySelector('.compactCard');
+  if(existing) document.getElementById('bankGrid').appendChild(existing);
+  target.appendChild(el);
+  target.classList.remove('over'); update();
+}
+function dropToBank(ev){
+  ev.preventDefault();
+  const id=ev.dataTransfer.getData("text/plain"); const el=document.getElementById(id);
+  if(el) document.getElementById('bankGrid').appendChild(el);
+  document.getElementById('qCardBank').classList.remove('over'); update();
+}
+function firstClassKorean(id){ if(answers[id]==='agree') return '동의'; if(answers[id]==='neutral') return '중립'; if(answers[id]==='disagree') return '비동의'; return '미응답'; }
+function getQScore(id){ const el=document.getElementById('qcard-'+id); if(!el) return null; const p=el.parentElement; if(p && p.dataset && p.dataset.score!==undefined) return Number(p.dataset.score); return null; }
+function validateSecond(){
+  let ok=true, placed=0, msgs=[];
+  currentDist.forEach(([score,need])=>{
+    const cells=[...document.querySelectorAll(`.cell[data-score="${score}"]`)];
+    const cnt=cells.filter(c=>c.querySelector('.compactCard')).length;
+    placed += cnt;
+    if(cnt!==need) ok=false;
+    msgs.push(`${score>0?'+'+score:score} ${cnt}/${need}`);
+  });
+  document.getElementById('qPlacedCnt').textContent=placed;
+  const bankCnt=document.querySelectorAll('#bankGrid .compactCard').length;
+  document.getElementById('qMsg').textContent = `피라미드 ${placed}/36 · 남은 카드 ${bankCnt}개 · ` + msgs.join(' · ');
+  return ok && placed===36 && bankCnt===0;
+}
+function getPayload(){
+  return {
+    research_title:"재난관리 연구자의 스트레스 인식 Q방법론",
+    receiver_email:researcherEmail,
+    submitted_at:new Date().toISOString(),
+    participant:{
+      id:document.getElementById('pid').value,
+      gender:document.getElementById('gender').value,
+      age_group:document.getElementById('ageGroup').value,
+      education:document.getElementById('education').value,
+      affiliation:document.getElementById('affil').value,
+      occupation:document.getElementById('occupation').value,
+      career:document.getElementById('career').value,
+      disaster_management_experience:document.getElementById('disasterExp').value,
+      research_field:document.getElementById('field').value,
+      organization_type:document.getElementById('orgType').value,
+      q_method_experience:document.getElementById('qExp').value,
+      note:document.getElementById('note').value
+    },
+    irb:{
+      status:document.getElementById('irbStatus').value,
+      approval_no:document.getElementById('irbNo').value,
+      researcher_name:document.getElementById('researcherName').value,
+      researcher_contact:document.getElementById('researcherContact').value
+    },
+    consent:{
+      consent_research_info:document.getElementById('consent1').checked,
+      consent_voluntary_participation:document.getElementById('consent2').checked,
+      consent_research_use:document.getElementById('consent3').checked,
+      consent_privacy:document.getElementById('consent4').checked
+    },
+    q_board_settings:{distribution:currentDist.map(([score,count])=>({score,count}))},
+    responses:statements.map(s=>({q_id:s.id, variable:s.variable, statement:s.text, first_classification:firstClassKorean(s.id), q_score:getQScore(s.id)}))
+  };
+}
+function update(){
+  const vals=Object.values(answers); const agree=vals.filter(v=>v==='agree').length; const neutral=vals.filter(v=>v==='neutral').length; const done=vals.length;
+  document.getElementById('agreeCnt').textContent=agree; document.getElementById('neutralCnt').textContent=neutral; document.getElementById('doneCnt').textContent=done;
+  document.getElementById('progress').style.width=(done/36*100)+'%';
+  document.getElementById('msg').textContent=`${done}/36개 완료`;
+  if(!document.getElementById('secondPanel').classList.contains('hide')) validateSecond();
+}
+
+// ── 카카오 초기화 ──────────────────────────────────────
+const KAKAO_APP_KEY = '7e04f1e40ea4ccae7dfc64ea57bbfccc'; // JavaScript 앱 키 (Kakao Developers)
+try { Kakao.init(KAKAO_APP_KEY); } catch(e) {}
+
+function shareKakao() {
+  const url = location.href.startsWith('file:') ? '파일로 열려 있어 공유 URL이 없습니다. 웹 서버에 업로드 후 공유하세요.' : location.href;
+  if (location.href.startsWith('file:')) {
+    alert('⚠️ 로컬 파일로 열려 있어 카카오톡 공유가 불가합니다.\n설문지를 웹 서버(GitHub Pages, Google Drive 등)에 업로드한 뒤 공유해 주세요.');
+    return;
+  }
+  try {
+    Kakao.Share.sendDefault({
+      objectType: 'text',
+      text: '📋 재난관리 연구자의 스트레스 인식 Q분류 설문에 참여해 주세요.\n\n동아대학교 일반대학원 재난관리학 석사과정 이정훈\nIRB 면제번호: DAU-GS-DM-2026-E-0047',
+      link: { mobileWebUrl: url, webUrl: url },
+      buttons: [{ title: '설문 참여하기', link: { mobileWebUrl: url, webUrl: url } }]
+    });
+  } catch(e) {
+    // SDK 미로드 또는 앱키 미설정 시 fallback
+    if (navigator.share) {
+      navigator.share({ title: 'Q분류 설문 참여 요청', text: '재난관리 연구자의 스트레스 인식 Q분류 설문에 참여해 주세요.', url });
+    } else {
+      copyUrl();
+      alert('카카오 SDK를 불러오지 못했습니다. 링크가 복사되었습니다. 카카오톡에 직접 붙여넣기 해주세요.');
+    }
+  }
+}
+
+function copyUrl() {
+  const url = location.href.startsWith('file:') ? '로컬 파일 - 웹 서버에 업로드 후 URL을 사용하세요' : location.href;
+  document.getElementById('shareUrlInput').value = url;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('링크가 복사되었습니다!');
+  }).catch(() => {
+    document.getElementById('shareUrlInput').select();
+    document.execCommand('copy');
+    showToast('링크가 복사되었습니다!');
+  });
+}
+
+let _lastPayload = null;
+function downloadJSON() {
+  if (!_lastPayload) return;
+  const pid = _lastPayload.participant.id || 'unknown';
+  const ts = new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+  const blob = new Blob([JSON.stringify(_lastPayload, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Q분류_${pid}_${ts}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function submitByBrowser(){
+  if(!['consent1','consent2','consent3','consent4'].every(id=>document.getElementById(id).checked)){ alert('연구참여 동의가 필요합니다.'); return; }
+  if(Object.keys(answers).length!==36){ alert('1차 분류 36개를 모두 완료해야 제출할 수 있습니다.'); return; }
+  if(document.getElementById('secondPanel').classList.contains('hide')){ alert('먼저 2차 분류 시작을 눌러 피라미드 배치를 진행해 주세요.'); return; }
+  if(!validateSecond()){ alert('2차 피라미드 배치가 완료되지 않았습니다. 모든 빈칸에 카드 1개씩 배치해 주세요.'); return; }
+
+  const payload = getPayload();
+  _lastPayload = payload;
+
+  // ① JSON 파일 즉시 다운로드
+  downloadJSON();
+
+  const statusBox = document.getElementById('submitStatus');
+  const statusText = document.getElementById('submitStatusText');
+  statusBox.classList.remove('hide');
+  statusText.textContent = '📧 이메일로 전송 중입니다. 창을 닫지 마세요.';
+
+  // ② FormSubmit으로 이메일 전송 (JSON 전체 첨부)
+  const pid = payload.participant.id || '미입력';
+  const formData = new FormData();
+  formData.append('_subject', `[Q분류 응답] 재난관리 스트레스 인식 - 참여자 ${pid}`);
+  formData.append('_template', 'table');
+  formData.append('_captcha', 'false');
+  formData.append('participant_id', pid);
+  formData.append('gender', payload.participant.gender || '');
+  formData.append('age_group', payload.participant.age_group || '');
+  formData.append('education', payload.participant.education || '');
+  formData.append('affiliation', payload.participant.affiliation || '');
+  formData.append('occupation', payload.participant.occupation || '');
+  formData.append('career', payload.participant.career || '');
+  formData.append('disaster_experience', payload.participant.disaster_management_experience || '');
+  formData.append('research_field', payload.participant.research_field || '');
+  formData.append('org_type', payload.participant.organization_type || '');
+  formData.append('q_exp', payload.participant.q_method_experience || '');
+  formData.append('irb_approval_no', payload.irb.approval_no || '');
+  formData.append('submitted_at', payload.submitted_at);
+  formData.append('note', payload.participant.note || '');
+
+  // JSON 전체를 텍스트 필드로 첨부 (FormSubmit은 파일 첨부 지원 안 하므로 긴 텍스트로 전달)
+  formData.append('qsort_full_json', JSON.stringify(payload, null, 2));
+
+  // JSON 요약표 (Q점수 목록)
+  const scoreTable = payload.responses.map(r=>`Q${r.q_id}(${r.variable}): 1차=${r.first_classification}, Q점수=${r.q_score}`).join('\n');
+  formData.append('q_score_summary', scoreTable);
+
+  try {
+    const res = await fetch('https://formsubmit.co/ajax/L7384@naver.com', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+    const result = await res.json().catch(() => ({}));
+    if (res.ok) {
+      statusText.textContent = '✅ 제출 완료! L7384@naver.com으로 결과가 전송되었고, JSON 파일도 다운로드되었습니다.';
+      document.getElementById('jsonDownloadArea').classList.remove('hide');
+      showToast('제출 완료! JSON 파일이 다운로드되었습니다.');
+    } else {
+      statusText.textContent = '⚠️ 이메일 전송 실패. FormSubmit 최초 인증이 필요하거나 오류가 발생했습니다. JSON 파일은 정상 다운로드되었습니다.';
+      document.getElementById('jsonDownloadArea').classList.remove('hide');
+      alert('이메일 전송 실패: FormSubmit 최초 인증 메일을 확인해 주세요.\nJSON 파일은 다운로드되었습니다.');
+      console.log(result);
+    }
+  } catch (err) {
+    statusText.textContent = '⚠️ 네트워크 오류로 이메일 전송에 실패했습니다. JSON 파일은 정상 다운로드되었습니다.';
+    document.getElementById('jsonDownloadArea').classList.remove('hide');
+    alert('전송 오류. JSON 파일은 다운로드되었으니 연구자에게 직접 전달해 주세요.');
+    console.error(err);
+  }
+}
+
+// URL 입력칸 초기화
+window.addEventListener('load', () => {
+  const inp = document.getElementById('shareUrlInput');
+  if (inp) inp.value = location.href.startsWith('file:') ? '(웹 서버에 업로드 후 URL 입력)' : location.href;
+});
+
+function resetAll(){
+  if(!confirm('처음부터 다시 하시겠습니까?')) return;
+  answers={}; currentPage=0;
+  document.getElementById('secondPanel').classList.add('hide'); document.getElementById('finishPanel').classList.add('hide'); document.getElementById('submitStatus').classList.add('hide');
+  buildPyramid(); renderPage(); update();
+}
+document.addEventListener('input', update);
+init();
+</script>
+</body>
+</html>
